@@ -38,7 +38,35 @@
     <?php
     include('conect.php');
     ?>
-    <form action="addProduct.php" method="post" emptypr="multipart/fo" class="form-add">
+    <?php
+    // hàm isset để kiếm tra xem có tồn tại hoặc khác null hay không  
+    if (isset($_POST['submit'])) {
+        $flight_number = $_POST['flight_number'];
+        $total_passengers = $_POST['total_passengers'];
+        $description = $_POST['description'];
+        $airline = $_POST['airline'];
+        if (isset($_FILES['image'])) {
+            $src = "image/";
+            //lấy ra tên ảnh
+            $images = $_FILES['image']['name'];
+            //Lấy ra đường dẫn ảnh
+            $tmp_image = $src . $images;
+            move_uploaded_file($_FILES['image']['tmp_name'], $tmp_image);
+            // $image_name = $_FILES['image']['name'];
+            // $tmp_image = $src . $images;
+        }
+        $sql = "INSERT INTO fights (flight_number,image, total_passengers, description, airline_id) VALUES('$flight_number', '$total_passengers', '$tmp_image', '$description', '$airline')";
+        if ($conn->exec($sql)) {
+            echo "Thêm dữ liệu thành công!";
+            // Điều hướng người dùng đến trang mới sau khi thêm thành công
+            header("Location: index.php");
+            exit(); // Đảm bảo kết thúc quá trình thực thi sau khi điều hướng
+        } else {
+            echo "Lỗi khi thêm dữ liệu: " . $conn->errorInfo()[2];
+        }
+    }
+    ?>
+    <form action="addProduct.php" method="post" enctype="multipart/form-data" class="form-add">
         <div class="row-in-form">
             <label for="">Flight Number</label>
             <input type="number" placeholder="" name="flight_number" id="flight_number">
@@ -71,7 +99,7 @@
             </select>
         </div>
 
-        <button type="submit">Submit</button>
+        <button class="btn btn-primary" type="submit" name="submit">Submit</button>
     </form>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
