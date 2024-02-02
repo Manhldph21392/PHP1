@@ -52,8 +52,6 @@
             //Lấy ra đường dẫn ảnh
             $tmp_image = $src . $images;
             move_uploaded_file($_FILES['image']['tmp_name'], $tmp_image);
-            // $image_name = $_FILES['image']['name'];
-            // $tmp_image = $src . $images;
         }
         $sql = "INSERT INTO fights (flight_number,image, total_passengers, description, airline_id) VALUES('$flight_number', '$total_passengers', '$tmp_image', '$description', '$airline')";
         if ($conn->exec($sql)) {

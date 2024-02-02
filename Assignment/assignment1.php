@@ -35,13 +35,38 @@
 
     ?>
     <?php
+    $errors = [];
     if (isset($_POST['submit'])) {
         $product_name = $_POST['product_name'];
         $product_price = $_POST['product_price'];
         $description = $_POST['description'];
         $category_id = $_POST['category_id'];
-        $sql = "INSERT INTO toyproduct(ProductName, ProductPrice,Description,CategoryId ) VALUES ('$product_name', '$product_price', '$description', '$category_id')";
-        $conn->exec($sql);
+        if (isset($_FILES['image'])) {
+            $src = "image/";
+            $images = $_FILES['image']['name'];
+            $tmp_image = $src . $images;
+            move_uploaded_file($_FILES['image']['tmp_name'], $tmp_image);
+        } else {
+            $errors['image'] = "Bạn phải chọn hình ảnh cho sản phẩm";
+        }
+        if (empty($product_name)) {
+            $errors['product_name'] = "Bạn phải nhập tên sản phẩm";
+        }
+        if (empty($product_price)) {
+            $errors['product_price'] = "Bạn phải nhập giá sản phẩm";
+        } elseif (!is_numeric($product_price)) {
+            $errors['product_price'] = "Giá sản phẩm phải là số";
+        } elseif ($product_price <= 0) {
+            $errors['product_price'] = "Giá sản phẩm phải lớn hơn  0";
+        }
+        if (empty($description)) {
+            $errors['description'] = "Bạn phải nhập mô tả cho sản phẩm";
+        }
+        if (empty($errors)) {
+            $sql = "INSERT INTO toyproduct(ProductName, ProductPrice,Description,CategoryId,image ) VALUES ('$product_name', '$product_price', '$description', '$category_id', '$tmp_image')";
+            $conn->exec($sql);
+            header("Location: index.php");
+        }
     }
     ?>
 
@@ -51,14 +76,40 @@
             <div class="form-group">
                 <label for="">Product Name</label>
                 <input type="text" name="product_name" id="product_name">
+                <br>
+                <?php
+                if (isset($errors['product_name'])) {
+                    echo "<span style='color:red'>{$errors['product_name']}</span>";
+                }
+                ?>
             </div>
             <div class="form-group">
                 <label for="">Product Price</label>
                 <input type="text" name="product_price" id="product_price">
+
+                <?php
+                if (isset($errors['product_price'])) {
+                    echo "<span style='color:red'>{$errors['product_price']}</span>";
+                }
+                ?>
             </div>
             <div class="form-group">
                 <label for="">Description</label>
                 <input type="text" name="description" id="description">
+                <?php
+                if (isset($errors['description'])) {
+                    echo "<span style='color:red'>{$errors['description']}</span>";
+                }
+                ?>
+            </div>
+            <div class="form-group">
+                <label for="">Image</label>
+                <input type="file" name="image" id="image">
+                <?php
+                if (isset($errors['image'])) {
+                    echo "<span style='color:red'>{$errors['image']}</span>";
+                }
+                ?>
             </div>
             <div class="form-group">
                 <label for="">CategoryId</label>
@@ -76,72 +127,7 @@
             <button class="btn btn-primary" type="submit" name="submit">Submit</button>
         </form>
     </div>
-
-    <?php
-    function sumProduct($n)
-    {
-        $sum = 0;
-        if ($n > 0 && is_int($n)) {
-            for ($i = 2; $i <= $n; $i += 2) {
-                $sum += $i;
-            }
-        } else {
-            echo "Vui long nhap so nguyen duong!";
-        }
-        return $sum;
-    }
-    $n = 10;
-    $allSum = sumProduct($n);
-    echo "Tổng của các số từ 1 đến n là: " . $allSum;
-    ?>
-    <?php
-
-    $dsSinhVien = array(
-        array("SV001", "Nguyen Van A", 8.5, 7.5),
-        array("SV002", "Tran Thi B", 9.0, 8.0),
-        array("SV003", "Le Van C", 7.5, 6.5),
-        array("SV004", "Pham Thi D", 6.0, 7.0),
-        array("SV005", "Hoang Van E", 8.0, 8.5)
-    );
-
-    // Hiển thị toàn bộ thông tin sinh viên
-
-
-    // Hiển thị sinh viên có điểm trung bình lớn hơn 8
    
-    ?>
-    <table>
-        <tr>
-            <th>Mã SV</th>
-            <th>Tên</th>
-            <th>Điểm Trung Bình</th>
-        </tr>
-        <?php foreach ($dsSinhVien as $sinhVien) : ?>
-            <tr>
-                <td><?php echo $sinhVien[0]; ?></td>
-                <td><?php echo $sinhVien[1]; ?></td>
-                <td><?php echo number_format(($sinhVien[2] + $sinhVien[3]) / 2, 2); ?></td>
-            </tr>
-        <?php endforeach; ?>
-        <table>
-            <tr>
-                <th>Mã SV</th>
-                <th>Tên</th>
-                <th>Điểm Trung Bình</th>
-            </tr>
-            <?php foreach ($dsSinhVien as $sinhVien) : ?>
-                <?php
-                $diemTB = ($sinhVien[2] + $sinhVien[3]) / 2;
-                if ($diemTB > 8) :
-                ?>
-                    <tr>
-                        <td><?php echo $sinhVien[0]; ?></td>
-                        <td><?php echo $sinhVien[1]; ?></td>
-                        <td><?php echo number_format($diemTB, 2); ?></td>
-                    </tr>
-                <?php endif; ?>
-            <?php endforeach; ?>
-        </table>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
