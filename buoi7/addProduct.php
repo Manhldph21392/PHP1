@@ -53,7 +53,7 @@
             $tmp_image = $src . $images;
             move_uploaded_file($_FILES['image']['tmp_name'], $tmp_image);
         }
-        $sql = "INSERT INTO fights (flight_number,image, total_passengers, description, airline_id) VALUES('$flight_number', '$total_passengers', '$tmp_image', '$description', '$airline')";
+        $sql = "INSERT INTO flights (flight_number,image, total_passengers, description, airline_id) VALUES('$flight_number', '$total_passengers', '$tmp_image', '$description', '$airline')";
         if ($conn->exec($sql)) {
             echo "Thêm dữ liệu thành công!";
             // Điều hướng người dùng đến trang mới sau khi thêm thành công

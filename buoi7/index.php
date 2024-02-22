@@ -7,9 +7,10 @@
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <style>
-        table{
+        table {
             margin: auto;
         }
+
         tr,
         td {
             text-align: center;
@@ -27,8 +28,12 @@
     <?php
     include 'conect.php';
 
-
-    $query = "SELECT fights.*, a.airlines_name FROM fights INNER JOIN airlines a ON fights.airline_id = a.airline_id";
+    session_start();
+    if (!isset($_SESSION['user'])) {
+        header("Location: login.php");
+        exit();
+    }
+    $query = "SELECT flights.*, a.airlines_name FROM flights INNER JOIN airlines a ON flights.airline_id = a.airline_id";
 
     $result = $conn->query($query);
 
@@ -53,8 +58,8 @@
             <td>{$row['description']}</td>
             <td>{$row['airlines_name']}</td>
             <td>
-               <button class = 'btn btn-primary'> <a href='edit_flight.php?flight_id={$row['flight_id']}'>Edit</a></button>
-                <button class = 'btn btn-danger'><a href='delete_flight.php?flight_id={$row['flight_id']}' onclick='return confirm(\"Are you sure?\")'>Delete</a></button>
+               <button class = 'btn btn-primary'> <a href='edit.php?flight_id={$row['flight_id']}'>Edit</a></button>
+                <button class = 'btn btn-danger'><a href='delete.php?flight_id={$row['flight_id']}' onclick='return confirm(\"Are you sure?\")'>Delete</a></button>
             </td>
         </tr>";
         }
